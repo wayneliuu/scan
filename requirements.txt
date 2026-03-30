@@ -1,0 +1,9 @@
+scapy>=2.5.0
+netifaces>=0.11.0
+requests[socks]>=2.31.0
+PySocks>=1.7.1
+mac-vendor-lookup>=0.1.12
+PyYAML>=6.0
+colorama>=0.4.6
+cryptography>=41.0.0
+stem>=1.8.0

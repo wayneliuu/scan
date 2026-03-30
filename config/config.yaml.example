@@ -1,0 +1,123 @@
+# 局域网扫描与微信流量检测工具配置文件
+# 复制此文件为 config.yaml 并根据需要修改
+
+# 扫描配置
+scan:
+  # 目标网络（CIDR格式）
+  target: "192.168.1.0/24"
+  
+  # 扫描模式: passive（被动）/ active（主动）/ hybrid（混合）
+  mode: "passive"
+  
+  # 超时时间（秒）
+  timeout: 5
+  
+  # 重试次数
+  retries: 1
+  
+  # 网络接口（留空则自动选择）
+  interface: null
+
+# 微信流量检测配置
+wechat_detection:
+  # 是否启用微信检测
+  enabled: true
+  
+  # 监控的域名列表（支持通配符*）
+  domains:
+    - "*.wechat.com"
+    - "*.weixin.qq.com"
+    - "*.qq.com"
+    - "*.weixinbridge.com"
+    - "*.servicewechat.com"
+    - "*.wx.qq.com"
+  
+  # 监控的端口列表
+  ports: [80, 443, 8080, 8443]
+  
+  # 监控时长（秒）
+  monitor_duration: 300
+
+# 隐蔽扫描配置
+stealth:
+  # 是否启用隐蔽模式
+  enabled: true
+  
+  # 隐蔽级别: low / medium / high / maximum
+  mode: "maximum"
+  
+  # 最小延迟（秒）- 仅在自定义模式下有效
+  delay_min: 10.0
+  
+  # 最大延迟（秒）- 仅在自定义模式下有效
+  delay_max: 60.0
+  
+  # 完全随机化（IP顺序、时间间隔等）
+  randomize_everything: true
+  
+  # 流量伪装类型: browser / dns / ntp
+  traffic_disguise: "browser"
+
+# 匿名性配置
+anonymity:
+  # 强制匿名模式（无代理则拒绝运行）
+  enforce: true
+  
+  # 代理配置
+  proxy:
+    # 是否启用代理
+    enabled: true
+    
+    # 代理类型: socks5 / http / tor
+    type: "socks5"
+    
+    # 代理主机
+    host: "127.0.0.1"
+    
+    # 代理端口（Tor默认9050）
+    port: 9050
+    
+    # 代理链（可选，用于多层代理）
+    chain: []
+  
+  # MAC地址伪装
+  mac_spoofing:
+    # 是否启用MAC伪装（需要root权限）
+    enabled: true
+    
+    # 使用随机MAC地址
+    random_mac: true
+    
+    # 指定MAC地址（random_mac为false时使用）
+    mac_address: null
+    
+    # 厂商伪装: random / specific
+    vendor_spoof: "random"
+  
+  # 操作系统指纹伪装
+  os_fingerprint:
+    # 是否启用OS指纹伪装
+    spoof: true
+    
+    # 目标操作系统类型: router / printer / iot / windows / linux
+    target_os: "router"
+  
+  # 无日志模式（不写入磁盘）
+  no_logs: true
+  
+  # 加密输出
+  encrypt_output: false
+
+# 输出配置
+output:
+  # 输出格式: terminal / json / csv
+  format: "terminal"
+  
+  # 输出文件路径（format为json或csv时使用）
+  file: null
+  
+  # 是否显示详细信息
+  verbose: true
+  
+  # 是否实时显示结果
+  realtime: true
