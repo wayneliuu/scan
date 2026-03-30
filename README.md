@@ -1,8 +1,420 @@
-# 局域网扫描与微信流量检测工具
+# LAN Scanner & WeChat Traffic Detector
 
-一个功能强大的Python工具，用于局域网设备发现、微信流量检测，支持隐蔽扫描和强匿名保护。
+[中文](#中文文档) | [English](#english-documentation)
 
-## ⚠️ 法律警告
+---
+
+## English Documentation
+
+A powerful Python tool for LAN device discovery and WeChat traffic detection, featuring stealth scanning and strong anonymity protection.
+
+### ⚠️ Legal Warning
+
+**Please read and understand the following:**
+
+1. **Authorized Networks Only**: This tool should only be used on networks you own or have explicit written authorization to test
+2. **Criminal Liability**: Unauthorized network scanning and traffic monitoring is a **criminal offense** in most jurisdictions
+3. **Privacy Violations**: Monitoring others' network activities may violate privacy protection laws
+4. **Evidence Retention**: Even with anonymity techniques, network device logs may still record anomalous behavior
+5. **Use at Your Own Risk**: All consequences of using this tool are the responsibility of the user
+
+**This tool is for educational and research purposes only. The developer is not responsible for any misuse.**
+
+### Features
+
+#### Core Features
+
+1. **LAN Device Discovery**
+   - ARP scanning: Quickly discover active devices on the LAN
+   - ICMP Ping scanning: Detect host availability
+   - Get device information: IP, MAC address, vendor information, hostname
+
+2. **WeChat Traffic Detection**
+   - Passive traffic monitoring: No need to send packets actively
+   - WeChat feature recognition: Based on domain, IP, port features
+   - Device association: Identify which devices are using WeChat
+   - Real-time monitoring: Continuously monitor WeChat connection status
+
+3. **Stealth Scanning Technology**
+   - Prioritize passive scanning: Use passive listening as much as possible
+   - Extremely slow scanning: 10-60 seconds/packet ultra-long interval
+   - Complete randomization: IP order, time interval, packet characteristics
+   - Traffic disguise: Disguise as normal browsing, DNS queries, etc.
+   - Distributed scanning: Scan in multiple time segments
+
+4. **Strong Anonymity Protection**
+   - Enforce proxy: All traffic goes through Tor/VPN/SOCKS5
+   - MAC address randomization: Use a different MAC address for each scan
+   - OS fingerprint disguise: Disguise as a router, printer, etc.
+   - No log mode: Do not leave scan records locally
+   - Packet encryption: Encrypt sensitive data transmission
+
+### System Requirements
+
+- Python 3.8+
+- Root/administrator privileges (required)
+- Linux or macOS operating system
+- Tor or other proxy services (strongly recommended)
+
+### Installation Steps
+
+#### 1. Clone or Download the Project
+
+```bash
+git clone https://github.com/wayneliuu/scan.git
+cd scan
+```
+
+#### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 3. Install Tor (Recommended)
+
+**macOS:**
+```bash
+brew install tor
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install tor
+```
+
+#### 4. Start Tor Service
+
+```bash
+tor
+```
+
+In another terminal, verify Tor connection:
+```bash
+curl --socks5 127.0.0.1:9050 https://check.torproject.org/api/ip
+```
+
+#### 5. Configure the Tool
+
+```bash
+cp config/config.yaml.example config/config.yaml
+nano config/config.yaml  # Modify the configuration as needed
+```
+
+### Usage
+
+#### Basic Usage
+
+```bash
+# Run with default configuration (passive mode)
+sudo python main.py
+
+# Specify a configuration file
+sudo python main.py --config config/config.yaml
+
+# Specify the scan mode
+sudo python main.py --mode passive   # Passive listening
+sudo python main.py --mode active    # Active scanning
+sudo python main.py --mode hybrid    # Hybrid mode
+```
+
+#### Configuration Explanation
+
+Edit `config/config.yaml` file:
+
+```yaml
+# Scan configuration
+scan:
+  target: "192.168.1.0/24"  # Target network
+  mode: "passive"           # Scan mode
+  timeout: 5
+  retries: 1
+
+# WeChat detection
+wechat_detection:
+  enabled: true
+  monitor_duration: 300     # Monitor for 5 minutes
+
+# Stealth mode
+stealth:
+  enabled: true
+  mode: "maximum"           # Maximum stealth
+  delay_min: 10.0
+  delay_max: 60.0
+
+# Anonymity
+anonymity:
+  enforce: true             # Enforce anonymity
+  proxy:
+    enabled: true
+    type: "socks5"
+    host: "127.0.0.1"
+    port: 9050              # Tor port
+  mac_spoofing:
+    enabled: true
+    random_mac: true
+```
+
+### Scan Modes
+
+#### 1. Passive Mode
+
+The most stealthy mode, only listening to network traffic without sending any packets.
+
+```bash
+sudo python main.py --mode passive
+```
+
+**Features:**
+- Completely passive, will not be detected by IDS
+- Requires a longer time to discover all devices
+- Suitable for long-term monitoring
+
+#### 2. Active Mode
+
+Use ARP and ICMP to actively scan devices.
+
+```bash
+sudo python main.py --mode active
+```
+
+**Features:**
+- Fast scanning speed
+- May be detected by firewalls/IDS
+- Suitable for quick scanning
+
+#### 3. Hybrid Mode
+
+First, listen passively, then scan actively.
+
+```bash
+sudo python main.py --mode hybrid
+```
+
+**Features:**
+- Balance stealth and speed
+- First, collect information passively, then scan actively
+
+### Output Results
+
+#### Terminal Output
+
+```
+Device #1:
+  ip: 192.168.1.100
+  mac: aa:bb:cc:dd:ee:ff
+  vendor: Apple, Inc.
+  hostname: iPhone-12
+  type: ARP
+  
+WeChat Device #1:
+  ip: 192.168.1.100
+  confidence: high
+  activity_count: 25
+  domains: wechat.com, weixin.qq.com
+```
+
+#### JSON Output
+
+```bash
+# Configure in the configuration file
+output:
+  format: "json"
+  file: "results.json"
+```
+
+#### CSV Output
+
+```bash
+# Configure in the configuration file
+output:
+  format: "csv"
+  file: "results.csv"
+```
+
+### Security Recommendations
+
+#### 1. Use Tor Network
+
+Strongly recommended to run through Tor network to protect your real IP address:
+
+```bash
+# Start Tor
+tor
+
+# Verify Tor connection
+curl --socks5 127.0.0.1:9050 https://check.torproject.org
+```
+
+#### 2. MAC Address Spoofing
+
+The tool will automatically randomize MAC addresses (requires root privileges). The original MAC will be restored automatically upon exit.
+
+#### 3. Stealth Scanning
+
+Use maximum stealth mode with 10-60 second intervals:
+
+```yaml
+stealth:
+  mode: "maximum"
+```
+
+#### 4. No Log Mode
+
+Enable no log mode to avoid leaving traces on disk:
+
+```yaml
+anonymity:
+  no_logs: true
+```
+
+### Troubleshooting
+
+#### 1. Permission Error
+
+```
+Error: This tool requires root privileges
+Solution: sudo python main.py
+```
+
+#### 2. Proxy Connection Failed
+
+```
+Error: Proxy verification failed
+Solution: 
+  1. Confirm Tor is running: ps aux | grep tor
+  2. Check port: netstat -an | grep 9050
+  3. Restart Tor: killall tor && tor
+```
+
+#### 3. MAC Spoofing Failed
+
+```
+Error: MAC address spoofing failed
+Solution:
+  1. Confirm you have root privileges
+  2. Check network interface name: ifconfig
+  3. Manually specify interface: set interface in config.yaml
+```
+
+#### 4. No Devices Found
+
+```
+Problem: Passive mode hasn't found devices for a long time
+Solution:
+  1. Increase monitoring time: monitor_duration: 600
+  2. Switch to hybrid mode: mode: "hybrid"
+  3. Confirm network interface is correct
+```
+
+### Project Structure
+
+```
+scan/
+├── scanner/
+│   ├── __init__.py
+│   ├── arp_scanner.py       # ARP scanning
+│   ├── icmp_scanner.py      # ICMP scanning
+│   ├── passive_sniffer.py   # Passive listening
+│   ├── wechat_detector.py   # WeChat detection
+│   ├── stealth.py           # Stealth techniques
+│   ├── anonymizer.py        # Anonymity protection
+│   └── utils.py             # Utility functions
+├── config/
+│   └── config.yaml.example  # Configuration template
+├── main.py                  # Main program
+├── requirements.txt         # Dependencies list
+├── .gitignore
+└── README.md
+```
+
+### Technical Details
+
+#### WeChat Traffic Recognition
+
+The tool identifies WeChat traffic through the following features:
+
+1. **DNS Queries**: Monitor WeChat-related domain queries
+   - `*.wechat.com`
+   - `*.weixin.qq.com`
+   - `*.qq.com`
+
+2. **IP Addresses**: Tencent Cloud IP ranges
+   - `101.226.*`
+   - `183.3.*`
+   - etc.
+
+3. **TLS SNI**: Server name in HTTPS handshake
+
+4. **Ports**: Common ports 80, 443, 8080, 8443
+
+#### Stealth Techniques
+
+1. **Passive Listening**: No packets sent, only listening
+2. **Slow Scanning**: 10-60 second intervals
+3. **Randomization**: IP order, timing, features all randomized
+4. **Traffic Disguise**: Disguise as browser, DNS, etc.
+5. **Distributed Scanning**: Scan in batches and time segments
+
+#### Anonymity Techniques
+
+1. **Tor Network**: Hide real IP through Tor
+2. **MAC Spoofing**: Random MAC addresses
+3. **OS Fingerprint**: Disguise as router, etc.
+4. **No Logs**: Memory operations, no disk writes
+
+### FAQ
+
+**Q: Is this tool legal?**
+A: The tool itself is legal, but unauthorized use is illegal. Only use on networks you own or have authorization for.
+
+**Q: Is it truly anonymous?**
+A: Using Tor and MAC spoofing greatly increases anonymity, but there's no absolute anonymity. Network device logs may still record anomalous traffic.
+
+**Q: Why does it need root privileges?**
+A: Raw sockets, MAC address modification, and packet capture all require root privileges.
+
+**Q: How long does scanning take?**
+A: Depends on stealth level:
+- Low stealth: A few minutes
+- Medium stealth: 10-30 minutes
+- High stealth: 1-2 hours
+- Maximum stealth: Several hours
+
+**Q: How to improve detection accuracy?**
+A: Increase monitoring time, use hybrid mode, ensure network interface is correct.
+
+### Disclaimer
+
+This tool is for **educational and research purposes only**. The author is not responsible for any misuse, including but not limited to:
+
+- Unauthorized network scanning
+- Privacy violations
+- Illegal monitoring
+- Other illegal activities
+
+Please consult legal professionals before use to ensure your usage complies with local laws and regulations.
+
+### License
+
+This project is for learning and research purposes only.
+
+### Contact
+
+For questions or suggestions, please contact through secure channels.
+
+---
+
+**Reminder: Only use on authorized networks, comply with laws and regulations, and respect others' privacy.**
+
+---
+
+## 中文文档
+
+一个功能强大的Python工具，用于局域网设备发现和微信流量检测，具有隐蔽扫描和强匿名保护功能。
+
+### ⚠️ 法律警告
 
 **请务必阅读并理解以下内容：**
 
@@ -14,9 +426,9 @@
 
 **本工具仅供教育和研究目的。开发者不对任何滥用行为负责。**
 
-## 功能特性
+### 功能特性
 
-### 核心功能
+#### 核心功能
 
 1. **局域网设备发现**
    - ARP扫描：快速发现局域网内活跃设备
@@ -43,28 +455,29 @@
    - 无日志模式：不在本地留下扫描记录
    - 数据包加密：对敏感数据加密传输
 
-## 系统要求
+### 系统要求
 
 - Python 3.8+
 - Root/管理员权限（必需）
 - Linux或macOS操作系统
 - Tor或其他代理服务（强烈推荐）
 
-## 安装步骤
+### 安装步骤
 
-### 1. 克隆或下载项目
+#### 1. 克隆或下载项目
 
 ```bash
-cd /Users/lw/go/src/shuoyao/hardlink-workspace/scan
+git clone https://github.com/wayneliuu/scan.git
+cd scan
 ```
 
-### 2. 安装依赖
+#### 2. 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. 安装Tor（推荐）
+#### 3. 安装Tor（推荐）
 
 **macOS:**
 ```bash
@@ -77,7 +490,7 @@ sudo apt update
 sudo apt install tor
 ```
 
-### 4. 启动Tor服务
+#### 4. 启动Tor服务
 
 ```bash
 tor
@@ -88,16 +501,16 @@ tor
 curl --socks5 127.0.0.1:9050 https://check.torproject.org/api/ip
 ```
 
-### 5. 配置工具
+#### 5. 配置工具
 
 ```bash
 cp config/config.yaml.example config/config.yaml
 nano config/config.yaml  # 根据需要修改配置
 ```
 
-## 使用方法
+### 使用方法
 
-### 基本用法
+#### 基本用法
 
 ```bash
 # 使用默认配置运行（被动模式）
@@ -112,7 +525,7 @@ sudo python main.py --mode active    # 主动扫描
 sudo python main.py --mode hybrid    # 混合模式
 ```
 
-### 配置说明
+#### 配置说明
 
 编辑 `config/config.yaml` 文件：
 
@@ -149,9 +562,9 @@ anonymity:
     random_mac: true
 ```
 
-## 扫描模式
+### 扫描模式
 
-### 1. 被动模式（Passive）
+#### 1. 被动模式（Passive）
 
 最隐蔽的模式，只监听网络流量，不发送任何数据包。
 
@@ -164,7 +577,7 @@ sudo python main.py --mode passive
 - 需要较长时间才能发现所有设备
 - 适合长期监控
 
-### 2. 主动模式（Active）
+#### 2. 主动模式（Active）
 
 使用ARP和ICMP主动扫描设备。
 
@@ -177,7 +590,7 @@ sudo python main.py --mode active
 - 可能被防火墙/IDS检测
 - 适合快速扫描
 
-### 3. 混合模式（Hybrid）
+#### 3. 混合模式（Hybrid）
 
 先被动监听，再主动扫描。
 
@@ -189,9 +602,9 @@ sudo python main.py --mode hybrid
 - 平衡隐蔽性和速度
 - 先被动收集信息，再针对性扫描
 
-## 输出结果
+### 输出结果
 
-### 终端输出
+#### 终端输出
 
 ```
 设备 #1:
@@ -208,7 +621,7 @@ sudo python main.py --mode hybrid
   domains: wechat.com, weixin.qq.com
 ```
 
-### JSON输出
+#### JSON输出
 
 ```bash
 # 配置文件中设置
@@ -217,7 +630,7 @@ output:
   file: "results.json"
 ```
 
-### CSV输出
+#### CSV输出
 
 ```bash
 # 配置文件中设置
@@ -226,9 +639,9 @@ output:
   file: "results.csv"
 ```
 
-## 安全建议
+### 安全建议
 
-### 1. 使用Tor网络
+#### 1. 使用Tor网络
 
 强烈建议通过Tor网络运行，以保护真实IP地址：
 
@@ -240,11 +653,11 @@ tor
 curl --socks5 127.0.0.1:9050 https://check.torproject.org
 ```
 
-### 2. MAC地址伪装
+#### 2. MAC地址伪装
 
 工具会自动随机化MAC地址（需要root权限）。退出时会自动恢复原始MAC。
 
-### 3. 隐蔽扫描
+#### 3. 隐蔽扫描
 
 使用最大隐蔽模式，扫描间隔10-60秒：
 
@@ -253,7 +666,7 @@ stealth:
   mode: "maximum"
 ```
 
-### 4. 无日志模式
+#### 4. 无日志模式
 
 启用无日志模式，不在磁盘留下痕迹：
 
@@ -262,16 +675,16 @@ anonymity:
   no_logs: true
 ```
 
-## 故障排除
+### 故障排除
 
-### 1. 权限错误
+#### 1. 权限错误
 
 ```
 错误: 此工具需要root权限运行
 解决: sudo python main.py
 ```
 
-### 2. 代理连接失败
+#### 2. 代理连接失败
 
 ```
 错误: 代理验证失败
@@ -281,7 +694,7 @@ anonymity:
   3. 重启Tor: killall tor && tor
 ```
 
-### 3. MAC伪装失败
+#### 3. MAC伪装失败
 
 ```
 错误: MAC地址伪装失败
@@ -291,7 +704,7 @@ anonymity:
   3. 手动指定接口: config.yaml中设置interface
 ```
 
-### 4. 未发现设备
+#### 4. 未发现设备
 
 ```
 问题: 被动模式长时间未发现设备
@@ -301,7 +714,7 @@ anonymity:
   3. 确认网络接口正确
 ```
 
-## 项目结构
+### 项目结构
 
 ```
 scan/
@@ -322,9 +735,9 @@ scan/
 └── README.md
 ```
 
-## 技术细节
+### 技术细节
 
-### 微信流量识别
+#### 微信流量识别
 
 工具通过以下特征识别微信流量：
 
@@ -342,7 +755,7 @@ scan/
 
 4. **端口**：常用端口 80, 443, 8080, 8443
 
-### 隐蔽技术
+#### 隐蔽技术
 
 1. **被动监听**：不发送数据包，只监听
 2. **慢速扫描**：10-60秒间隔
@@ -350,14 +763,14 @@ scan/
 4. **流量伪装**：伪装成浏览器、DNS等
 5. **分散扫描**：分批次、分时段
 
-### 匿名技术
+#### 匿名技术
 
 1. **Tor网络**：通过Tor隐藏真实IP
 2. **MAC伪装**：随机MAC地址
 3. **OS指纹**：伪装成路由器等设备
 4. **无日志**：内存操作，不写磁盘
 
-## 常见问题
+### 常见问题
 
 **Q: 工具是否合法？**
 A: 工具本身合法，但未经授权使用属于违法行为。仅在您拥有或有授权的网络上使用。
@@ -378,7 +791,7 @@ A: 取决于隐蔽级别：
 **Q: 如何提高检测准确率？**
 A: 增加监控时间，使用混合模式，确保网络接口正确。
 
-## 免责声明
+### 免责声明
 
 本工具仅供**教育和研究目的**。作者不对任何滥用行为负责，包括但不限于：
 
@@ -389,11 +802,11 @@ A: 增加监控时间，使用混合模式，确保网络接口正确。
 
 使用前请咨询法律专业人士，确保您的使用符合当地法律法规。
 
-## 许可证
+### 许可证
 
 本项目仅供学习研究使用。
 
-## 联系方式
+### 联系方式
 
 如有问题或建议，请通过安全渠道联系。
 
